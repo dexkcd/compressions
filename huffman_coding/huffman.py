@@ -7,6 +7,9 @@ import heapq
 import pickle
 
 
+"""
+	Util functions and objects
+"""
 lookup={}
 lookupB={}
 
@@ -27,6 +30,9 @@ def convert(string_code):
 	print "length ",len(string_code)," ", size
 	return final
 
+"""
+	Huffman Node Class Definition
+"""
 class HuffmanNode:
 	compressed = "" 
 	def __init__(self, char, frequency):
@@ -59,6 +65,9 @@ class HuffmanNode:
 		HuffmanNode.traverse(root.left, code+'1')
 		HuffmanNode.traverse(root.right, code+'0')
 
+"""
+	Compression Function
+"""
 def compress(infile, outfile):
 	cmap = dict()
 	size =0
@@ -98,7 +107,10 @@ def compress(infile, outfile):
 	output.close()
 	pickle.dump(root, open("pickledump.hmc","wb"))
 	print "Done compressing file"
-	
+
+"""
+	Decompression Function
+"""
 def decompress(infile, outfile):
 	cmap = dict()
 	size =0
@@ -112,8 +124,6 @@ def decompress(infile, outfile):
 		for line in inputfile:
 			for ch  in line:
 				code = bin(ord(ch))[3:] #only 7 bits makes sense
-			#	print code
-			#	print bin(ord(ch))
 				uncompressed+=code
 			break
 	
@@ -128,18 +138,22 @@ def decompress(infile, outfile):
 		buff+=char
 		if buff in lookupB:
 			final += lookupB[buff]
-		#	print lookupB[buff]
 			buff = ""
 	print "unwritten:  ", buff
 	output = file(outfile, "w")
 	output.write(final)
 	output.close()
 	print "Done Decompressing"
+
+"""
+	Main Funtion, switches between compression and decompression
+"""
 def main():
-	print "hello"
 	print 'Number of arguments:', len(sys.argv), 'arguments.'
 	print 'Argument List:', str(sys.argv)
-
+	if len(sys.argv) < 4:
+		print "Missing Arguments. Usage: ./huffman.py <1 for compression, 2 for decompression> <input file> <output file>"
+		return
 	operation = sys.argv[1]
 	infile = sys.argv[2] 
 	outfile = sys.argv[3]
