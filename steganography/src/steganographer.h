@@ -2,10 +2,11 @@
 
 class Steganographer
 {
-	Steganographer();
-	~Steganographer();
 	public:
-		static int compress(const char *imageFile, const char *inputfile);
-		static int decompress(const char *imageFile, const char *inputfile);
+		Steganographer();
+		~Steganographer();
+	public:
+		int compress(const char *imageFile, const char *inputfile, const char *outputImage);
+		int decompress(const char *imageFile, const char *inputfile);
 
 };
