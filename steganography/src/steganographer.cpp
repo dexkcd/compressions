@@ -6,6 +6,8 @@
 
 #define cimg_use_png
 #include "steganographer.h"
+#define SPECTSIZE 3
+#define EOFSTR "11111111"
 using namespace cimg_library;
 
 Steganographer::Steganographer(){}
@@ -49,13 +51,13 @@ int Steganographer::compress(const char *imageFile, const char *inputFile, const
 	int width = image.width();
 	
 	int vals[width*height];
-	if(width*height <  strlen(input.str().c_str()))
+	if(width*height*SPECTSIZE <  strlen(input.str().c_str()))
 		return -1;
 	for(int x = 0; x < width; x++)
 	{
 		for(int y=0; y < height; y++)
 		{
-			for(int spect = 0; spect < 3; spect++) // iterate through spectrum
+			for(int spect = 0; spect < SPECTSIZE; spect++) // iterate through spectrum
 			{
 				if(it == bitlist.end()) break;
 				int r = int(image(x,y,0,spect));
@@ -95,7 +97,7 @@ int Steganographer::decompress(const char *imageFile, const char *outputfile)
 	{
 		for(int y=0; y < height; y++)
 		{
-			for(int spect = 0; spect < 3; spect++) // iterate through spectrum
+			for(int spect = 0; spect < SPECTSIZE; spect++) // iterate through spectrum
 			{
 				int r = int(image(x,y,0,spect));
 				bits+= (char(r%2) + '0');
@@ -108,8 +110,14 @@ int Steganographer::decompress(const char *imageFile, const char *outputfile)
 						c = (c << 1) + (*it-'0');
 						shift++;
 					}
-					if(bits.compare("11111111")==0)
-						goto here;
+					if(bits.compare(EOFSTR)==0)
+					{
+						//override y/height, x/width and spect to end loops
+						x = width;
+						y = height;
+						c = SPECTSIZE;
+						break;
+					}
 						
 					message << c;
 					bits="";
